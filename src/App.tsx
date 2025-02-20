@@ -1,34 +1,47 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [response, setResponse] = useState('')
+
+  const handleButtonClick = async (url: string, method: string) => {
+    try {
+      const options = {
+        method,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+      const res = await fetch(url, options)
+      const data = await res.json()
+      setResponse(JSON.stringify(data))
+    } catch (error) {
+      if (error instanceof Error) {
+        setResponse('Error: ' + error.message)
+      } else {
+        setResponse('An unknown error occurred')
+      }
+    }
+  }
 
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
+    <div className="container">
+      <h1>API Request Buttons</h1>
+      <div className="button-group">
+        <button onClick={() => handleButtonClick('https://fastapi-production-3895.up.railway.app/monitor/status', 'GET')}>
+          GET Status
         </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
+        <button onClick={() => handleButtonClick('https://fastapi-production-3895.up.railway.app/monitor/create', 'POST')}>
+          POST Create
+        </button>
+        <button onClick={() => handleButtonClick('https://fastapi-production-3895.up.railway.app/monitor/stop', 'POST')}>
+          POST Stop
+        </button>
       </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+      <div className="response">
+        <p>Response: {response}</p>
+      </div>
+    </div>
   )
 }
 
